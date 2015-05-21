@@ -20,6 +20,7 @@ double min(double one, double two, double three);
 Point random_point(Point p, int radius);
 
 Mat warp_image(Mat *image, Mat *flow);
+Mat offset_warp(Mat *image, Mat *flow);
 Mat compute_offset(Mat *flow);
 
 void write_flow_field(Mat *flow);

@@ -53,9 +53,24 @@ Mat warp_image(Mat *image, Mat *flow) {
     for (int i = 0; i < image->rows; i++) {
         for (int j = 0; j < image->cols; j++) {
             Point location = flow->at<Point>(i, j);
-            if (location.y > image->rows) location.y = 0;
-            Vec3d value = image->at<Vec3d>(location);
+            Vec3d value = image->at<Vec3d>(location.y, location.x);
             warped_image.at<Vec3d>(i, j) = value;
+        }
+    }
+
+    return warped_image;
+}
+
+Mat offset_warp(Mat *image, Mat *flow) {
+    Mat warped_image;
+    Mat offset = compute_offset(flow);
+
+    for (int i = 0; i < image->rows; i++) {
+        for (int j = 0; j < image->cols; j++) {
+            Point pixel_offset = offset.at<Point>(i, j);
+            Vec3d value = image->at<Vec3d>(i, j);
+
+            warped_image.at<Vec3d>(i + pixel_offset.x, j + pixel_offset.y);
         }
     }
 

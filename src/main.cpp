@@ -30,10 +30,10 @@ int main(int argc, char **argv) {
         pyramid(&left, &right, window_size, N_PYRAMID_LEVELS, N_ITERATIONS);
     } else {
         Mat flow = initialize_random_flow(&left);
-
-        imwrite("Image0.png", warp_image(&left, &flow));
-
         patchmatch(&left, &right, &flow, window_size, N_ITERATIONS);
+
+        Mat offset = compute_offset(&flow);
+        write_flow_field(&offset);
     }
 
     return 0;

@@ -16,7 +16,8 @@ void patchmatch(Mat *left, Mat *right, Mat *flow, int window_size, int iteration
         stringstream string;
         string << "Image" << i + 1 << ".png";
 
-        imwrite(string.str(), warp_image(left, flow));
+        //imwrite(string.str(), warp_image(right, flow));
+        imwrite(string.str(), offset_warp(right, flow));
         cout << "Iteration " << i + 1 << " complete!" << endl;
     }
 }
@@ -67,8 +68,8 @@ void propagate_even(Mat *left, Mat *right, Mat *flow, int window_size) {
 void propagate_odd(Mat *left, Mat *right, Mat *flow, int window_size) {
     int pixels_changed = 0;
 
-    for (int i = left->rows - 2; i > 0; i--) {
-        for (int j = left->cols - 2; j > 0; j--) {
+    for (int i = left->rows - 1; i > 0; i--) {
+        for (int j = left->cols - 1; j > 0; j--) {
             Point patch(i, j);
             Point some_patch(i + 1, j); //right
             Point another_patch(i, j + 1); //below
