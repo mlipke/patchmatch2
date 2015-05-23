@@ -37,14 +37,14 @@ void pyramid(Mat *left, Mat *right, int window_size, int levels, int iterations)
         Mat level_right = right_pyramid.at((unsigned long)i);
 
         if (i == 0) {
-            scaling_flow = initialize_random_flow(&level_left);
+            initialize_random_flow(&level_left, &scaling_flow);
         } else {
             Mat temp;
             scaling_flow.copyTo(temp);
             scaling_flow = upscale_flow(&temp);
         }
 
-        random_flow = initialize_random_flow(&level_left);
+        initialize_random_flow(&level_left, &scaling_flow);
 
         pyramid_patchmatch(&level_left, &level_right, &random_flow, &scaling_flow, window_size, iterations);
     }

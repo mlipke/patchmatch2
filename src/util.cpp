@@ -7,20 +7,16 @@
 
 #include "util.h"
 
-Mat initialize_random_flow(Mat *image) {
-    Mat flow = Mat_<Point>(image->cols, image->rows);
-
+void initialize_random_flow(Mat *image, Mat *flow) {
     for (int i = 0; i < image->rows; i++) {
-        Point *p = flow.ptr<Point>(i);
+        Point *p = flow->ptr<Point>(i);
         for (int j = 0; j < image->cols; j++) {
             int random_x = rand() % (image->cols - 1);
             int random_y = rand() % (image->rows - 1);
 
-            p[j] = Point(random_x, random_y);
+            p[j] = Point(random_y, random_x);
         }
     }
-
-    return flow;
 }
 
 bool out_of_bounds(Point point, Mat *image) {
@@ -53,7 +49,7 @@ Mat warp_image(Mat *image, Mat *flow) {
     for (int i = 0; i < image->rows; i++) {
         for (int j = 0; j < image->cols; j++) {
             Point location = flow->at<Point>(i, j);
-            Vec3d value = image->at<Vec3d>(location.y, location.x);
+            Vec3d value = image->at<Vec3d>(location.x, location.y);
             warped_image.at<Vec3d>(i, j) = value;
         }
     }
@@ -62,15 +58,19 @@ Mat warp_image(Mat *image, Mat *flow) {
 }
 
 Mat offset_warp(Mat *image, Mat *flow) {
-    Mat warped_image;
-    Mat offset = compute_offset(flow);
+    Mat warped_image = Mat_<Vec3d>(image->rows, image->cols);
+    Mat offset = Mat_<Point>(flow->rows, flow->cols);
+    compute_offset(flow, &offset);
 
-    for (int i = 0; i < image->rows; i++) {
-        for (int j = 0; j < image->cols; j++) {
+    for (int i = 1; i < image->rows; i++) {
+        for (int j = 1; j < image->cols; j++) {
             Point pixel_offset = offset.at<Point>(i, j);
             Vec3d value = image->at<Vec3d>(i, j);
 
-            warped_image.at<Vec3d>(i + pixel_offset.x, j + pixel_offset.y);
+            if (i + pixel_offset.x < image->cols && j + pixel_offset.y < image->rows
+                    && i + pixel_offset.x > 0 && j + pixel_offset.y > 0) {
+                warped_image.at<Vec3d>(i + pixel_offset.x, j + pixel_offset.y) = value;
+            }
         }
     }
 
@@ -84,17 +84,13 @@ void write_flow_field(Mat *flow) {
     flow_file.close();
 }
 
-Mat compute_offset(Mat *flow) {
-    Mat offset = Mat_<Point>(flow->rows, flow->cols);
-
+void compute_offset(Mat *flow, Mat *offset) {
     for (int i = 0; i < flow->rows; i++) {
         for (int j = 0; j < flow->cols; j++) {
             Point f = flow->at<Point>(i, j);
-            offset.at<Point>(i, j) = Point(f.x - j, f.y - i);
+            offset->at<Point>(i, j) = Point(f.x - j, f.y - i);
         }
     }
-
-    return offset;
 }
 
 void write_flo_file(Mat *flow) {

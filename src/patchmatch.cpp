@@ -16,8 +16,8 @@ void patchmatch(Mat *left, Mat *right, Mat *flow, int window_size, int iteration
         stringstream string;
         string << "Image" << i + 1 << ".png";
 
-        //imwrite(string.str(), warp_image(right, flow));
-        imwrite(string.str(), offset_warp(right, flow));
+        //imwrite(string.str(), warp_image(left, flow));
+        //imwrite(string.str(), offset_warp(right, flow));
         cout << "Iteration " << i + 1 << " complete!" << endl;
     }
 }

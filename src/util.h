@@ -10,7 +10,7 @@
 using namespace cv;
 using namespace std;
 
-Mat initialize_random_flow(Mat *image);
+void initialize_random_flow(Mat *image, Mat *flow);
 
 bool out_of_bounds(Point point, Mat *image);
 bool out_of_bounds(int i, int min, int max);
@@ -21,8 +21,8 @@ Point random_point(Point p, int radius);
 
 Mat warp_image(Mat *image, Mat *flow);
 Mat offset_warp(Mat *image, Mat *flow);
-Mat compute_offset(Mat *flow);
 
+void compute_offset(Mat *flow, Mat *offset);
 void write_flow_field(Mat *flow);
 void write_flo_file(Mat *flow);
 
